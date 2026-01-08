@@ -79,7 +79,7 @@ std::vector<Interval> Simulator::generateVelProfile(int totalDistanceKm, double 
     {
         double fraction = double(randomWeights[i]) / weightSum;
 
-        // For the very last segment, take the remaining distance to fix floating point rounding errors (example: sum ending at 999.9999m)
+        // For the very last segment, take the remaining distance to fix floating point rounding errors (like if the sum is ending at 999.9999m)
         if (i == N-1) {
             intervals[i].space_ = totalMeters - currentPos; // this guarantees that the sum of all Interval spaces_ equal the total distance
         } else {

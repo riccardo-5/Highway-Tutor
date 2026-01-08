@@ -15,6 +15,7 @@ class Simulator
     public:
         Simulator(const Highway& highway);
         std::vector<Interval> generateVelProfile(int distanceKm, double currentDepartureTime);
+        void generateRuns(); // writes on Runs.txt file
 
     private:
         static constexpr int kNumOfVehicles = 10000;
@@ -26,7 +27,7 @@ class Simulator
         static constexpr double kMaxTimeInterval = 900; // seconds
         std::vector<Vehicle> vehicles_;
 
-        void generateRuns(); // writes on Runs.txt file
+    
 
         // Private Helpers:
         std::pair<int, int> getRandomJunctionIndices(size_t numJunctions) const;

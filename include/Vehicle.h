@@ -19,7 +19,7 @@ class Vehicle
 {
     public:
         // Constructor
-        Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std::vector<Interval> velProfile);    
+        Vehicle::Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std::vector<Interval> velProfile) : licensePlate_{generateLicensePlate()}, entryTime_{entryTime}, entryJunctionId_{entryJunctionId}, exitJunctionId_{exitJunctionId}, velocityProfile_{velProfile} {}
         
         // Getters
         const std::string& getLicensePlate() const { return licensePlate_; }
