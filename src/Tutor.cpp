@@ -87,7 +87,7 @@ void Tutor::printStats() const {
     std::cout << "\n=== STATISTICHE DEL SISTEMA ===" << std::endl;
     
     
-    for (auto const& pair : varcoCounts)      //scorriamo la mappa dei varchi.
+    for (auto const& pair : varcoCounts) {     //scorriamo la mappa dei varchi.
         double minutes = (currentTime > 0) ? currentTime / 60.0 : 0.0;
         double rate = (minutes > 0) ? pair.second / minutes : 0.0;
         
@@ -98,6 +98,18 @@ void Tutor::printStats() const {
     double avgSpeed = (speedMeasurementsCount > 0) ? totalSpeedSum / speedMeasurementsCount : 0.0; 
     std::cout << "Velocità media rilevata: " << avgSpeed << " km/h" << std::endl;
     std::cout << "Totale sanzioni emesse: " << totalSanctions << std::endl;
+}
+
+void Tutor::reset() {  // - Svuotamento dei contenitori.
+   
+    currentTime = 0.0;
+    nextPassageIndex = 0;
+    activeVehicles.clear();
+    varcoCounts.clear();
+    totalSanctions = 0;
+    totalSpeedSum = 0.0;
+    speedMeasurementsCount = 0;
+    std::cout << "Sistema resettato." << std::endl;
 }
 
 
