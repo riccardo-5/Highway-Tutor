@@ -7,7 +7,7 @@
 Tutor::Tutor(const Highway& h) : highway(h), currentTime(0.0), nextPassageIndex(0),  totalSanctions(0), totalSpeedSum(0.0), speedMeasurementsCount(0) {} //inizializzazione membri
 
 void Tutor::loadPassages(const std::string& filename) {    //Apertura file. Se fallisce, gestiamo l'errore stampando un messaggio
-  std::ifsream file(filename);
+  std::ifstream file(filename);
   if (!file.is_open()) {
     std::cerr << "Errore: Impossibile aprire " <<filename << std::endl;
     return;
@@ -99,13 +99,3 @@ void Tutor::printStats() const {
     std::cout << "Velocità media rilevata: " << avgSpeed << " km/h" << std::endl;
     std::cout << "Totale sanzioni emesse: " << totalSanctions << std::endl;
 }
-
-
-
-
-
-
-
-
-
-
