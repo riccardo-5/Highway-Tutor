@@ -18,7 +18,7 @@ public:
     Tutor(const Highway& h); //costruttore
 
 
-    void loadPassages(const std::string& filename);  // Passaggio di stringhe per const reference per evitare copie inutili.
+    void loadPassages(const std::string& filename);  //caricamento dati nel file.
     void setTime(double secondsToAdd); //time
 
     void printStats() const;
