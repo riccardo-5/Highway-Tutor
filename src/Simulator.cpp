@@ -2,7 +2,7 @@
 #include "../include/Simulator.h"
 
 // Constructor
-Simulator::Simulator(const Highway& highway)
+Simulator::Simulator(const Highway& highway) : highway_{highway}
 {
     static std::mt19937 gen(std::random_device{}()); // create random generator. random_device() return the seed for the generator
     std::uniform_real_distribution<double> dist(kMinGap, kMaxGap); // initializing a uniform distribution within the (0.5-10) seconds range
@@ -12,8 +12,8 @@ Simulator::Simulator(const Highway& highway)
 
     for (int i = 0; i < kNumOfVehicles; ++i) 
     {
-        auto [entryId, exitId] = getRandomJunctionIndices(highway.getJunctions().size()); // select randomly the entry and the exit points
-        int traveledDistance = highway.getJunctions()[exitId] - highway.getJunctions()[entryId]; // in km
+        auto [entryId, exitId] = getRandomJunctionIndices(highway_.getJunctions().size()); // select randomly the entry and the exit points
+        int traveledDistance = highway_.getJunctions()[exitId].distFromOrigin_ - highway_.getJunctions()[entryId].distFromOrigin_; // in km
         Vehicle newVehicle(currentDepartureTime, entryId, exitId, generateVelProfile(traveledDistance, currentDepartureTime));
         
         vehicles_.push_back(newVehicle);
@@ -39,8 +39,50 @@ void Simulator::generateRuns()
             outFile << v.getLicensePlate() << " " << v.getEntryJunctionId() << " " << v.getExitJunctionId() << " " << v.getEntryTime() << " " << v.profileToString() << "\n";
         }
    } else {
-        std::cerr << "I couldn't open the file" << std::endl;
+        std::cerr << "I couldn't open the file at path:" << filePath << std::endl;
    }
+}
+
+void Simulator::generatePassages()
+{
+    fs::path targetDir = "../Data";
+    fs::path filePath = targetDir / "Passages.txt";
+    
+    std::ofstream outFile(filePath); // open output file
+    if (outFile)
+    {
+        for (Vehicle& v : vehicles_)
+        {
+            const std::vector<int>& passages_ids = highway_.getPassagesInBetween(v.getEntryJunctionId(), v.getExitJunctionId());
+            for (int id : passages_ids)
+            {
+                size_t intervalCounter = 0; // start from the first Interval in the velocity profile of current vehicle
+                double currentPassageDist = static_cast<double>(highway_.getPassages()[id].distFromOrigin_) * 1000.0; // in meters
+                double currentVehicleDist = static_cast<double>(highway_.getJunctions()[v.getEntryJunctionId()].distFromOrigin_) * 1000.0; // in meters
+
+                const std::vector<Interval>& profile = v.getProfile();
+                
+                if (intervalCounter < profile.size()) // check if the vehicle's velocity profile is not empty
+                {
+                    currentVehicleDist += profile[intervalCounter].space_;
+
+                    while (currentVehicleDist < currentPassageDist && (intervalCounter + 1) < profile.size())
+                    {
+                        intervalCounter++;
+                        currentVehicleDist += profile[intervalCounter].space_;
+                    }
+                    currentVehicleDist -= profile[intervalCounter].space_; // return to the beginning position of current Interval
+                    double remainingDist = currentPassageDist - currentVehicleDist;
+                    double remainingTime = remainingDist / profile[intervalCounter].v_;
+                    double transitionMoment = profile[intervalCounter].start_ + remainingTime;
+                
+                    outFile << id << " " << v.getLicensePlate() << " " << transitionMoment << "\n";
+                }
+            }
+        }
+    } else {
+        std::cerr << "I couldn't open the file at path: " << filePath << std::endl;
+    }
 }
 
 
