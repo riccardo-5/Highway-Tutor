@@ -14,8 +14,9 @@ class Simulator
 {
     public:
         Simulator(const Highway& highway);
-        std::vector<Interval> generateVelProfile(int distanceKm, double currentDepartureTime);
+        std::vector<Interval> generateVelProfile(double distanceKm, double currentDepartureTime);
         void generateRuns(); // writes on Runs.txt file
+        void generatePassages(); // writes on Passages.txt file
 
     private:
         static constexpr int kNumOfVehicles = 10000;
@@ -26,6 +27,7 @@ class Simulator
         static constexpr double kMaxVelocity = 52.77; // m/s
         static constexpr double kMaxTimeInterval = 900; // seconds
         std::vector<Vehicle> vehicles_;
+        Highway highway_;
 
     
 

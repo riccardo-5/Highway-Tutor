@@ -1,13 +1,11 @@
 #ifndef TUTOR_H
 #define TUTOR_H
 #include "Highway.h"
-#include <string>
-#include <vector>
 #include <unordered_map>
 #include <map>
 
 
-struct Passage {  //raggruppare dati
+struct Passage {  //group data
     int varcoId;
     std::string plate;
     double timestamp; 
@@ -15,10 +13,10 @@ struct Passage {  //raggruppare dati
 
 class Tutor {
 public:
-    Tutor(const Highway& h); //costruttore
+    Tutor(const Highway& h); //constructor
 
 
-    void loadPassages(const std::string& filename);  //caricamento dati nel file.
+    void loadPassages(const std::string& filename);  //loading data into file.
     void setTime(double secondsToAdd); //time
 
     void printStats() const;
@@ -30,13 +28,12 @@ private:
     double currentTime;
 
 
-    std::vector<Passage> allPassages;    // Vettore per memorizzare tutti i passaggi letti dal file.
-    size_t nextPassageIndex;     // Gestisce automaticamente la memoria
+    std::vector<Passage> allPassages;    // Vector to store all the steps read from the file.
+    size_t nextPassageIndex;     // Automatically manages memory
 
-    std::unordered_map<std::string, Passage> activeVehicles;     // associare Targa -> Ultimo Passaggio.
+    std::unordered_map<std::string, Passage> activeVehicles;     // Associate License Plate -> Last Pass.
   
-    std::map<int, int> varcoCounts;     // Map ordinata per le statistiche (VarcoID -> Conteggio).
-
+    std::map<int, int> varcoCounts;     //Map sorted by statistics (VarcoID -> Count).
     long totalSanctions;
     double totalSpeedSum;
     long speedMeasurementsCount;

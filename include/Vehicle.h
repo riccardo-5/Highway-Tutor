@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <sstream>
+#include <iomanip> // Needed for setprecision
 
 struct Interval // represents an Interval of the Velocity Profile
 {
@@ -19,7 +21,7 @@ class Vehicle
 {
     public:
         // Constructor
-        Vehicle::Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std::vector<Interval> velProfile) : licensePlate_{generateLicensePlate()}, entryTime_{entryTime}, entryJunctionId_{entryJunctionId}, exitJunctionId_{exitJunctionId}, velocityProfile_{velProfile} {}
+        Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std::vector<Interval> velProfile);
         
         // Getters
         const std::string& getLicensePlate() const { return licensePlate_; }

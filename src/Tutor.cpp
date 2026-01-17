@@ -13,7 +13,7 @@ void Tutor::loadPassages(const std::string& filename) {    //Opening a file. If 
     return;
   }
 
-int vId;
+int vID;
 std::string plate;
 double time;
 
