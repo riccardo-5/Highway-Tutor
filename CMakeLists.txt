@@ -1,27 +1,31 @@
 cmake_minimum_required(VERSION 3.10)
 project(HighwaySimulation)
 
-# 1. Specify where to find your header files
+# Imposta lo standard C++ e l'ottimizzazione richiesta [cite: 118, 103]
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
+
+# 1. Specifica dove trovare gli header
 include_directories(include)
 
-# 2. Group your shared source files (logic used by both apps)
-set(COMMON_SOURCES
+# 2. File sorgente condivisi (logica base dell'autostrada e veicoli)
+set(BASE_SOURCES
     src/Highway.cpp
-    src/Simulator.cpp
-    src/Tutor.cpp
     src/Vehicle.cpp
 )
 
-# 3. Create the first executable: GenerateSimulation
-# This uses its specific main file + all shared logic
+# 3. Primo eseguibile: Simulatore (Generazione profili e passaggi)
+# Non necessita di Tutor.cpp 
 add_executable(GenerateSimulation 
     src/GenerateSimulation.cpp 
-    ${COMMON_SOURCES}
+    src/Simulator.cpp
+    ${BASE_SOURCES}
 )
 
-# 4. Create the second executable: StartTutor
-# This uses its specific main file + all shared logic
+# 4. Secondo eseguibile: Sistema Tutor (Analisi transiti e sanzioni)
+# Non necessita di Simulator.cpp 
 add_executable(StartTutor 
     src/StartTutor.cpp 
-    ${COMMON_SOURCES}
+    src/Tutor.cpp
+    ${BASE_SOURCES}
 )

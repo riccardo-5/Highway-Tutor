@@ -13,8 +13,8 @@ Simulator::Simulator(const Highway& highway) : highway_{highway}
     for (int i = 0; i < kNumOfVehicles; ++i) 
     {
         auto [entryId, exitId] = getRandomJunctionIndices(highway_.getJunctions().size()); // select randomly the entry and the exit points
-        int traveledDistance = highway_.getJunctions()[exitId].distFromOrigin_ - highway_.getJunctions()[entryId].distFromOrigin_; // in km
-        Vehicle newVehicle(currentDepartureTime, entryId, exitId, generateVelProfile(traveledDistance, currentDepartureTime));
+        double traveledDistance = highway_.getJunctions()[exitId].distFromOrigin_ - highway_.getJunctions()[entryId].distFromOrigin_; // in km
+        Vehicle newVehicle(currentDepartureTime, entryId+1, exitId+1, generateVelProfile(traveledDistance, currentDepartureTime)); // transforming indexes from 0-based to 1-based
         
         vehicles_.push_back(newVehicle);
 
@@ -28,7 +28,7 @@ Simulator::Simulator(const Highway& highway) : highway_{highway}
 namespace fs = std::filesystem;
 void Simulator::generateRuns()
 {
-   fs::path targetDir = "../Data";
+   fs::path targetDir = "Data";
    fs::path filePath = targetDir / "Runs.txt"; // creates full path "../Data/Runs.txt"
    
    std::ofstream outFile(filePath); // open output file
@@ -36,7 +36,7 @@ void Simulator::generateRuns()
    {
         for (Vehicle& v : vehicles_)
         {
-            outFile << v.getLicensePlate() << " " << v.getEntryJunctionId() << " " << v.getExitJunctionId() << " " << v.getEntryTime() << " " << v.profileToString() << "\n";
+            outFile << v.getLicensePlate() << "  " << v.getEntryJunctionId() << "  " << v.getExitJunctionId() << "  " << v.getEntryTime() << " " << v.profileToString() << "\n";
         }
    } else {
         std::cerr << "I couldn't open the file at path:" << filePath << std::endl;
@@ -45,7 +45,7 @@ void Simulator::generateRuns()
 
 void Simulator::generatePassages()
 {
-    fs::path targetDir = "../Data";
+    fs::path targetDir = "Data";
     fs::path filePath = targetDir / "Passages.txt";
     
     std::ofstream outFile(filePath); // open output file
@@ -57,8 +57,8 @@ void Simulator::generatePassages()
             for (int id : passages_ids)
             {
                 size_t intervalCounter = 0; // start from the first Interval in the velocity profile of current vehicle
-                double currentPassageDist = static_cast<double>(highway_.getPassages()[id].distFromOrigin_) * 1000.0; // in meters
-                double currentVehicleDist = static_cast<double>(highway_.getJunctions()[v.getEntryJunctionId()].distFromOrigin_) * 1000.0; // in meters
+                double currentPassageDist = static_cast<double>(highway_.getPassages()[id-1].distFromOrigin_) * 1000.0; // in meters
+                double currentVehicleDist = static_cast<double>(highway_.getJunctions()[v.getEntryJunctionId()-1].distFromOrigin_) * 1000.0; // in meters
 
                 const std::vector<Interval>& profile = v.getProfile();
                 
@@ -86,11 +86,11 @@ void Simulator::generatePassages()
 }
 
 
-std::vector<Interval> Simulator::generateVelProfile(int totalDistanceKm, double currentDepartureTime)
+std::vector<Interval> Simulator::generateVelProfile(double totalDistanceKm, double currentDepartureTime)
 {
     if (totalDistanceKm <= 0) return {}; // return an empty vector calling its default constructor (so no heap involved)
 
-    double totalMeters = static_cast<double>(totalDistanceKm) * 1000.0; // convert Km to meters with double precision
+    double totalMeters = totalDistanceKm * 1000.0; // convert Km to meters with double precision
     constexpr int kMinSegmentLength = kMinVelocity * kMinTimeInterval; 
     constexpr int kMaxSegmentLength = kMaxVelocity * kMaxTimeInterval; 
 

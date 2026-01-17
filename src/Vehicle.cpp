@@ -1,14 +1,23 @@
 // RICCARDO TOSIN 2137380
 #include "../include/Vehicle.h"
 
+// Constructor
+Vehicle::Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std::vector<Interval> velProfile) 
+    : licensePlate_{generateLicensePlate()}, 
+      entryJunctionId_{entryJunctionId}, 
+      exitJunctionId_{exitJunctionId}, 
+      entryTime_{entryTime}, 
+      velocityProfile_{velProfile} {}
+
+
 std::string Vehicle::profileToString() const
 {
     std::string s;
     for (size_t i = 0; i < velocityProfile_.size(); ++i) // for each Interval
     {
-        double time = velocityProfile_[i].end_ - velocityProfile_[i].start_; // calculate t_i (how much time is the Interval)
+        double time = velocityProfile_[i].end_ - velocityProfile_[i].start_; // calculate t_i (how much time is the Interval) (in seconds)
 
-        s += "[" + std::to_string(velocityProfile_[i].v_) + " " + std::to_string(time) + "]";
+        s += std::to_string(velocityProfile_[i].v_) + " " + std::to_string(time);
 
         if (i != velocityProfile_.size() - 1) s += ", ";
     }
