@@ -17,7 +17,9 @@ std::string Vehicle::profileToString() const
     {
         double time = velocityProfile_[i].end_ - velocityProfile_[i].start_; // calculate t_i (how much time is the Interval) (in seconds)
 
-        s += std::to_string(velocityProfile_[i].v_) + " " + std::to_string(time);
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << velocityProfile_[i].v_ << " " << time;
+        s += oss.str();
 
         if (i != velocityProfile_.size() - 1) s += ", ";
     }

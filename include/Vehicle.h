@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <sstream>
+#include <iomanip> // Needed for setprecision
 
 struct Interval // represents an Interval of the Velocity Profile
 {

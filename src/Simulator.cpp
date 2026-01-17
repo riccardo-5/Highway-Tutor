@@ -13,7 +13,7 @@ Simulator::Simulator(const Highway& highway) : highway_{highway}
     for (int i = 0; i < kNumOfVehicles; ++i) 
     {
         auto [entryId, exitId] = getRandomJunctionIndices(highway_.getJunctions().size()); // select randomly the entry and the exit points
-        double traveledDistance = highway_.getJunctions()[exitId].distFromOrigin_ - highway_.getJunctions()[entryId].distFromOrigin_; // in km
+        double traveledDistance = highway_.getJunctions()[exitId].getKm() - highway_.getJunctions()[entryId].getKm(); // in km
         Vehicle newVehicle(currentDepartureTime, entryId+1, exitId+1, generateVelProfile(traveledDistance, currentDepartureTime)); // transforming indexes from 0-based to 1-based
         
         vehicles_.push_back(newVehicle);
@@ -57,8 +57,8 @@ void Simulator::generatePassages()
             for (int id : passages_ids)
             {
                 size_t intervalCounter = 0; // start from the first Interval in the velocity profile of current vehicle
-                double currentPassageDist = static_cast<double>(highway_.getPassages()[id-1].distFromOrigin_) * 1000.0; // in meters
-                double currentVehicleDist = static_cast<double>(highway_.getJunctions()[v.getEntryJunctionId()-1].distFromOrigin_) * 1000.0; // in meters
+                double currentPassageDist = static_cast<double>(highway_.getPassages()[id-1].getKm()) * 1000.0; // in meters
+                double currentVehicleDist = static_cast<double>(highway_.getJunctions()[v.getEntryJunctionId()-1].getKm()) * 1000.0; // in meters
 
                 const std::vector<Interval>& profile = v.getProfile();
                 

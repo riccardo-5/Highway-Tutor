@@ -1,8 +1,6 @@
 #ifndef TUTOR_H
 #define TUTOR_H
 #include "Highway.h"
-#include <string>
-#include <vector>
 #include <unordered_map>
 #include <map>
 

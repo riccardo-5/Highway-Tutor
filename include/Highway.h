@@ -1,45 +1,30 @@
+//Autore: Longo Domenico 2101783
 #ifndef HIGHWAY_H
-#define HIGHWAY_H
+#define HIGHWAY_H 
+
+//File: Highway.h (autostrada)
 #include <vector>
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <algorithm>
-#include <cmath>
 
-struct Junction
-{
-    int id_;
-    double distFromOrigin_; // in km
+#include "Junction.h"
+#include "Passage.h"
+
+class Highway {
+private:
+    std::vector<Passage> passages_; //vettore dei varchi
+    std::vector<Junction> junctions_; //vettore degli svincoli
+public:
+
+    void loadFromFile(const std::string& path); //carica l'autostrada dal file
+
+    const std::vector<Passage>& getPassages() const { return passages_; } //restituisce i varchi
+    const std::vector<Junction>& getJunctions() const { return junctions_; } //restituisce gli svincoli
+
+    std::vector<int> getPassagesInBetween(int entryJunctionId, int exitJunctionId) const; //restituisce gli id dei varchi tra due svincoli
+    std::vector<int> getJunctionsInBetween(int entryPassageId, int exitPassageId) const; //restituisce gli id degli svincoli tra due varchi
+
+    double getJunctionKm(int junctionId) const; //restituisce la distanza in km di uno svincolo
+    double getPassageKm(int passageId) const; //restituisce la distanza in km di un varco
 };
-
-struct Passage
-{
-    int id_;
-    double distFromOrigin_;
-};
-
-class Highway
-{
-    public:
-        // Constructor
-        Highway(const std::string& path);
-
-        // Getters
-        const std::vector<Junction>& getJunctions() const { return junctions_; }
-        const std::vector<Passage>& getPassages() const { return passages_; }
-
-
-        std::vector<int> getPassagesInBetween(int startJunctionId, int endJunctionId) const;
-
-
-
-    private:
-        std::vector<Junction> junctions_; // the int values represent the junction distance from the origin
-        std::vector<Passage> passages_;
-        void validate();
-};
-
-
 
 #endif

@@ -13,12 +13,12 @@ void Tutor::loadPassages(const std::string& filename) {    //Apertura file. Se f
     return;
   }
 
-int vId;
+int vID;
 std::string plate;
 double time;
 
 while (file >> vID >> plate >> time) {     //Lettura del file riga per riga
-    allPassages.push_back({vId, plate, time}); //push_back aggiunge elementi in coda al vettore ridimensionandolo dinamicamente
+    allPassages.push_back({vID, plate, time}); //push_back aggiunge elementi in coda al vettore ridimensionandolo dinamicamente
 }
 file.close();
 
