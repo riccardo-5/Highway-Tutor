@@ -1,7 +1,5 @@
 //Autore: Longo Domenico 2101783
-//File: Highway.cpp (autostrada)
 #include "Highway.h"
-
 #include <cmath> //per abs
 #include <fstream> //per ifstream
 #include <sstream> //per istringstream

@@ -1,7 +1,7 @@
+//Autore: Longo Domenico 2101783
 #ifndef PASSAGE_H
 #define PASSAGE_H
-//Autore: Longo Domenico 2101783
-//File: Passage.h (varco)
+
 class Passage {
 private:
     int id_; //identificativo univoco del varco

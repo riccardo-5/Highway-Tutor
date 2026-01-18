@@ -1,7 +1,7 @@
+//Autore: Longo Domenico 2101783
 #ifndef JUNCTION_H
 #define JUNCTION_H
-//Autore: Longo Domenico 2101783
-//File: Junction.h (svincolo)
+
 class Junction {
 private:
     int id_; //identificativo univoco dello svincolo

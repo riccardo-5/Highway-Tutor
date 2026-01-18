@@ -1,8 +1,6 @@
 //Autore: Longo Domenico 2101783
 #ifndef HIGHWAY_H
 #define HIGHWAY_H 
-
-//File: Highway.h (autostrada)
 #include <vector>
 #include <string>
 #include <iostream>

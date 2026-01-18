@@ -38,7 +38,7 @@ void Simulator::generateRuns(const std::string& path)
             outFile << v.getLicensePlate() << "  " << v.getEntryJunctionId() << "  " << v.getExitJunctionId() << "  " << v.getEntryTime() << " " << v.profileToString() << "\n";
         }
    } else {
-        std::cerr << "I couldn't open the file at path:" << filePath << std::endl;
+        std::cerr << "non riesco ad aprire il file in: " << filePath << std::endl;
    }
 }
 
@@ -79,7 +79,7 @@ void Simulator::generatePassages(const std::string& path)
             }
         }
     } else {
-        std::cerr << "I couldn't open the file at path: " << filePath << std::endl;
+        std::cerr << "non riesco ad aprire il file in: " << filePath << std::endl;
     }
 }
 

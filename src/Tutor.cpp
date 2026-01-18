@@ -9,7 +9,7 @@ Tutor::Tutor(const Highway& h) : highway(h), currentTime(0.0), nextPassageIndex(
 void Tutor::loadPassages(const std::string& filename) {    //Opening a file. If this fails, we handle the error by printing a message.
   std::ifstream file(filename);
   if (!file.is_open()) {
-    std::cerr << "Error: Unable to open " <<filename << std::endl;
+    std::cerr << "Errore, non riesco ad aprire: " <<filename << std::endl;
     return;
   }
 
@@ -97,21 +97,13 @@ void Tutor::printStats() const {
 
 
 void Tutor::reset() {
-    // Riporta il tempo all'istante iniziale
     currentTime = 0.0; 
-    
-    // Resetta l'indice per ricominciare la lettura dei transiti
     nextPassageIndex = 0;
-    
-    // Azzera i contatori delle statistiche e delle sanzioni
     totalSanctions = 0;
     totalSpeedSum = 0.0;
     speedMeasurementsCount = 0;
     
-    // Svuota le strutture dati temporanee
+    // empty data structures
     activeVehicles.clear();
     varcoCounts.clear();
-    
-    // Nota: allPassages non viene svuotato perché contiene 
-    // i dati caricati dal file Passages.txt che serviranno ancora.
 }
