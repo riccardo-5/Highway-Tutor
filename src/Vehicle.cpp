@@ -9,7 +9,7 @@ Vehicle::Vehicle(double entryTime, int entryJunctionId, int exitJunctionId, std:
       entryTime_{entryTime}, 
       velocityProfile_{velProfile} {}
 
-
+// Needed to print out the velocity profile of a vehicle
 std::string Vehicle::profileToString() const
 {
     std::string s;
@@ -18,7 +18,7 @@ std::string Vehicle::profileToString() const
         double time = velocityProfile_[i].end_ - velocityProfile_[i].start_; // calculate t_i (how much time is the Interval) (in seconds)
 
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(2) << velocityProfile_[i].v_ << " " << time;
+        oss << std::fixed << std::setprecision(2) << velocityProfile_[i].v_ << " " << time; // allowing only 2 decimals 
         s += oss.str();
 
         if (i != velocityProfile_.size() - 1) s += ", ";

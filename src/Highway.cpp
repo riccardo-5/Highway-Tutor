@@ -1,5 +1,6 @@
-//Autore: Longo Domenico 2101783
+//LONGO DOMENICO 2101783
 #include "Highway.h"
+
 #include <cmath> //per abs
 #include <fstream> //per ifstream
 #include <sstream> //per istringstream
@@ -26,34 +27,36 @@ void Highway::loadFromFile(const std::string& path) {
 
     //leggo il file riga per riga
     while (std::getline(file, line)) {
-        if(line.size()==0) continue; //salto righe vuote
 
-        //uso istringstream per leggere i dati dalla riga
-        std::istringstream iss(line);
-        double km;
-        char type;
+    // EXTRA:
+    // Considero "vuote" anche righe fatte solo di spazi/tab.
+    // Così il parser non esplode su file con formattazione umana.
+    std::istringstream iss(line);
+    iss >> std::ws;//consumo eventuali whitespace iniziali
+    if (iss.eof()) continue;//riga vuota (o solo spazi): la salto
 
-        //controllo formato riga
-        if(!(iss >> km >> type)) {
-            throw std::runtime_error("Formato riga non valido: " + line);//gestione errore formato riga
-            }
-        //controllo km negativo
-        if(km < 0) {
-            throw std::runtime_error("Valore km negativo: " + std::to_string(km));//gestione errore km negativo
-            }
-        //controllo tipo varco o svincolo
-        if(type == 'V') {
-            passageKm.push_back(km); //aggiungo il km al vettore temporaneo
-            } 
-        //controllo tipo svincolo invece di varco
-        else if(type == 'S') {
-            junctionKm.push_back(km); //aggiungo il km al vettore temporaneo
-            }
-        //controllo tipo non valido
-        else {
-            throw std::runtime_error("Tipo non valido: " + std::string(1, type));//gestione errore tipo non valido
-            }
+    double km;
+    char type;
+
+
+    // Parsing esplicito e controllato:
+    // se non riesco a leggere km e tipo, il file non è conforme.
+    if(!(iss >> km >> type)){
+        throw std::runtime_error("Formato riga non valido: " + line);
+       }
+    if (km < 0) {
+        throw std::runtime_error("Valore km negativo: " + std::to_string(km));
+      }
+    if(type == 'V'){
+        passageKm.push_back(km);
+       } 
+    else if(type == 'S'){
+        junctionKm.push_back(km);
+       } 
+    else{
+        throw std::runtime_error("Tipo non valido: " + std::string(1, type));
         }
+    }
 
     //Ordino per km crescente
     std::sort(passageKm.begin(), passageKm.end());
@@ -89,12 +92,30 @@ void Highway::loadFromFile(const std::string& path) {
         throw std::runtime_error("Deve essere presente almeno uno svincolo (S) dopo l'ultimo varco.");
         }
 
-    //Controllo che ci sia la distanza minima di 1 km tra varchi e svincoli
-    for(double sKm : junctionKm){
-        for(double vKm : passageKm){
-            double dist=std::abs(sKm - vKm);
-            if(dist < 1.0){
-                throw std::runtime_error("La distanza minima tra varchi e svincoli deve essere di almeno 1 km.");
+    // EXTRA:
+    // Controllo distanza minima (>= 1 km) tra SVINCOLI e VARCHI
+    // in modo efficiente (O(N log M)) anziche' O(N*M) grazie alle liste ordinate.
+    //
+    // Idea: per ogni varco, mi basta controllare lo svincolo più vicino
+    // (quello trovato da lower_bound) e quello immediatamente precedente.
+    // Se nessuno dei due è troppo vicino, allora nessuno lo sarà.
+    for (double vKm : passageKm) {
+
+        // it punta al primo svincolo con km >= vKm
+        auto it = std::lower_bound(junctionKm.begin(), junctionKm.end(), vKm);
+
+        // Controllo lo svincolo "a destra" (se esiste)
+        if (it != junctionKm.end()) {
+            if (std::abs(*it - vKm) < 1.0) {
+                throw std::runtime_error("Distanza < 1 km tra varco e svincolo (troppo vicini).");
+            }
+        }
+
+        // Controllo lo svincolo "a sinistra" (se esiste)
+        if (it != junctionKm.begin()) {
+            auto itPrev = std::prev(it);
+            if (std::abs(*itPrev - vKm) < 1.0) {
+                throw std::runtime_error("Distanza < 1 km tra varco e svincolo (troppo vicini).");
                 }
             }
         }
@@ -133,31 +154,92 @@ double Highway::getPassageKm(int passageID) const {
     return passages_.at(passageID - 1).getKm();
     }
 
-//Restituisce gli id dei varchi tra due svincoli
+//Restituisce gli id dei varchi tra due svincoli 
 std::vector<int> Highway::getPassagesInBetween(int entryJunctionID, int exitJunctionID) const {
 
-    double entryKm = getJunctionKm(entryJunctionID);//km dello svincolo di entrata
-    double exitKm = getJunctionKm(exitJunctionID);//km dello svincolo di uscita
-    
-    //controllo che lo svincolo di uscita sia dopo quello di entrata
-    if(exitKm <= entryKm) {
-        throw std::runtime_error("Lo svincolo di uscita deve essere dopo quello di entrata.");
-        }
-    
-    //cerco i varchi tra i due svincoli
+    // Validazione ID (piu' chiaro di un out_of_range)
+    if (entryJunctionID < 1 || entryJunctionID > (int)junctions_.size() ||
+        exitJunctionID  < 1 || exitJunctionID  > (int)junctions_.size()) {
+        throw std::runtime_error("ID svincolo fuori range in getPassagesInBetween().");
+    }
+    // Ottengo i km degli svincoli di ingresso e uscita
+    double entryKm = getJunctionKm(entryJunctionID);
+    double exitKm  = getJunctionKm(exitJunctionID);
+    // Stesso svincolo -> nessun varco attraversato
+    if (entryKm == exitKm) return {};
+    const double lo = std::min(entryKm, exitKm);
+    const double hi = std::max(entryKm, exitKm);
+    const bool forward = (entryKm < exitKm);
     std::vector<int> result;
+    // passages_ e' ordinato per km crescente -> uso ricerca binaria
+    auto itBegin = std::upper_bound(
+        passages_.begin(), passages_.end(), lo,
+        [](double value, const Passage& p){ return value < p.getKm(); }
+    ); // primo con km > lo
 
-    //scorro tutti i varchi
-    for(const Passage& p : passages_) {
-        double pk=p.getKm();//km del varco
-        //se il varco è tra i due svincoli lo aggiungo al risultato
-        if(pk > entryKm && pk < exitKm) {
-            result.push_back(p.getId());
-            }
+    auto itEnd = std::lower_bound(
+        passages_.begin(), passages_.end(), hi,
+        [](const Passage& p, double value){ return p.getKm() < value; }
+    ); // primo con km >= hi
+
+    if (forward) {
+        for (auto it = itBegin; it != itEnd; ++it) {
+            result.push_back(it->getId());
         }
+    } else {
+        for (auto it = std::make_reverse_iterator(itEnd);
+             it != std::make_reverse_iterator(itBegin); ++it) {
+            result.push_back(it->getId());
+        }
+    }
     return result;
 }
 
+//EXTRA: restituisce gli id degli svincoli tra due varchi (inclusi gli estremi)
+std::vector<int> Highway::getJunctionsInBetween(int entryPassageId, int exitPassageId) const {
+
+    // Validazione ID
+    if (entryPassageId < 1 || entryPassageId > (int)passages_.size() ||
+        exitPassageId  < 1 || exitPassageId  > (int)passages_.size()) {
+        throw std::runtime_error("ID varco fuori range in getJunctionsInBetween().");
+    }
+
+    double entryKm = getPassageKm(entryPassageId);
+    double exitKm  = getPassageKm(exitPassageId);
+
+    // Stesso varco -> nessuno svincolo in mezzo
+    if (entryKm == exitKm) return {};
+
+    const double lo = std::min(entryKm, exitKm);
+    const double hi = std::max(entryKm, exitKm);
+    const bool forward = (entryKm < exitKm);
+
+    std::vector<int> result;
+
+    // junctions_ e' ordinato per km crescente -> uso ricerca binaria
+    auto itBegin = std::upper_bound(
+        junctions_.begin(), junctions_.end(), lo,
+        [](double value, const Junction& j){ return value < j.getKm(); }
+    ); // primo con km > lo
+
+    auto itEnd = std::lower_bound(
+        junctions_.begin(), junctions_.end(), hi,
+        [](const Junction& j, double value){ return j.getKm() < value; }
+    ); // primo con km >= hi
+
+    if (forward) {
+        for (auto it = itBegin; it != itEnd; ++it) {
+            result.push_back(it->getId());
+        }
+    } else {
+        for (auto it = std::make_reverse_iterator(itEnd);
+             it != std::make_reverse_iterator(itBegin); ++it) {
+            result.push_back(it->getId());
+        }
+    }
+
+    return result;
+}
 
 double Highway::getDistance(int passageId1, int passageId2) const {
     // Safety check

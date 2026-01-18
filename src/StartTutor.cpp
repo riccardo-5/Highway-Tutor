@@ -4,7 +4,7 @@
 
 int main() {
     Highway highway;
-    highway.loadFromFile("../Data/Highway.txt");
+    highway.loadFromFile("../Data/Highway_valid_unsorted.txt"); // modify the path to load a different Highway (must modify the path in GenerateSimulation too!!)
     Tutor tutor(highway);
     
     tutor.loadPassages("../Data/Passages.txt"); 
