@@ -1,4 +1,0 @@
-C:/Users/ricca/Desktop/Highway Tutor/build/CMakeFiles/GenerateSimulation.dir
-C:/Users/ricca/Desktop/Highway Tutor/build/CMakeFiles/StartTutor.dir
-C:/Users/ricca/Desktop/Highway Tutor/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/ricca/Desktop/Highway Tutor/build/CMakeFiles/ZERO_CHECK.dir
