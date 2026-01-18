@@ -26,10 +26,9 @@ Simulator::Simulator(const Highway& highway) : highway_{highway}
 }
 
 namespace fs = std::filesystem;
-void Simulator::generateRuns()
+void Simulator::generateRuns(const std::string& path)
 {
-   fs::path targetDir = "Data";
-   fs::path filePath = targetDir / "Runs.txt"; // creates full path "../Data/Runs.txt"
+   fs::path filePath = path;
    
    std::ofstream outFile(filePath); // open output file
    if (outFile)
@@ -43,10 +42,9 @@ void Simulator::generateRuns()
    }
 }
 
-void Simulator::generatePassages()
+void Simulator::generatePassages(const std::string& path)
 {
-    fs::path targetDir = "Data";
-    fs::path filePath = targetDir / "Passages.txt";
+    fs::path filePath = path;
     
     std::ofstream outFile(filePath); // open output file
     if (outFile)

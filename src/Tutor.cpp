@@ -4,7 +4,7 @@
 #include <iomanip>      
 #include <algorithm>
 
-Tutor::Tutor(const Highway& h) : highway(h), currentTime(0.0), nextPassageIndex(0),  totalSanctions(0), totalSpeedSum(0.0), speedMeasurementsCount(0) {} //inizializzazione membri
+Tutor::Tutor(const Highway& h) : highway(h), currentTime(0.0), nextPassageIndex(0),  totalSanctions(0), totalSpeedSum(0.0), speedMeasurementsCount(0) {} 
 
 void Tutor::loadPassages(const std::string& filename) {    //Opening a file. If this fails, we handle the error by printing a message.
   std::ifstream file(filename);
@@ -18,11 +18,11 @@ std::string plate;
 double time;
 
 while (file >> vID >> plate >> time) {     //Reading the file line by line
-    allPassages.push_back({vId, plate, time}); //push_back adds elements to the end of the vector, dynamically resizing it
+    allPassages.push_back({vID, plate, time}); //push_back adds elements to the end of the vector, dynamically resizing it
 }
 file.close();
 
-std::sort(allPassages.begin(), allPassages.end(), [](const Passage& a, const Passage& b) {return a.timestamp < b.timestamp;}); //lamda eexpression to handle the 'allPassages' vector
+std::sort(allPassages.begin(), allPassages.end(), [](const tutorPassage& a, const tutorPassage& b) {return a.timestamp < b.timestamp;}); //lamda eexpression to handle the 'allPassages' vector
 }
 void Tutor::setTime(double secondsToAdd) { 
     if (secondsToAdd < 0) {                   //We verify that the user does not enter negative times
@@ -33,7 +33,7 @@ void Tutor::setTime(double secondsToAdd) {
     double targetTime = currentTime + secondsToAdd;
 
     while (nextPassageIndex < allPassages.size()) {
-        const Passage& p = allPassages[nextPassageIndex];
+        const tutorPassage& p = allPassages[nextPassageIndex];
         
         if (p.timestamp > targetTime) {
             break;                  // If the transition time is beyond the time requested by the user, we stop.
@@ -45,7 +45,7 @@ void Tutor::setTime(double secondsToAdd) {
 
     currentTime = targetTime;
 }
-void Tutor::processPassage(const Passage& currentP) {
+void Tutor::processPassage(const tutorPassage& currentP) {
     varcoCounts[currentP.varcoId]++; 
 
 
@@ -53,7 +53,7 @@ void Tutor::processPassage(const Passage& currentP) {
     
 
     if (it != activeVehicles.end()) {  // Check if the license plate is already present
-        Passage previousP = it->second;
+        tutorPassage previousP = it->second;
         double distKm = highway.getDistance(previousP.varcoId, currentP.varcoId);// The Tutor asks the Highway class the distance
         if (distKm > 0) {
             
@@ -66,9 +66,10 @@ void Tutor::processPassage(const Passage& currentP) {
             if (speed > 130.0) {    //Check the speed limit and print the fine.
                 totalSanctions++;
 
-                std::cout << "[PENALTY] License Plate: " << currentP.plate 
-                          << " | Route: Gate " << previousP.varcoId << " -> " << currentP.varcoId
+                std::cout << "[PENALTY] Plate: " << currentP.plate 
+                          << " | Route: " << previousP.varcoId << " -> " << currentP.varcoId
                           << " | Speed: " << std::fixed << std::setprecision(2) << speed << " km/h"
+                          << " | Times: " << previousP.timestamp << "s, " << currentP.timestamp << "s" 
                           << std::endl;
             }
         }
@@ -82,7 +83,7 @@ void Tutor::printStats() const {
     std::cout << "\n=== SYSTEM STATISTICS ===" << std::endl;
     
     
-    for (auto const& pair : varcoCounts)      //Let's scroll through the map of the gates.
+    for (auto const& pair : varcoCounts)  {    //Let's scroll through the map of the gates.
         double minutes = (currentTime > 0) ? currentTime / 60.0 : 0.0;
         double rate = (minutes > 0) ? pair.second / minutes : 0.0;
         
@@ -92,4 +93,25 @@ void Tutor::printStats() const {
     double avgSpeed = (speedMeasurementsCount > 0) ? totalSpeedSum / speedMeasurementsCount : 0.0; 
     std::cout << "Average speed detected: " << avgSpeed << " km/h" << std::endl;
     std::cout << "Total fines issued: " << totalSanctions << std::endl;
+}
+
+
+void Tutor::reset() {
+    // Riporta il tempo all'istante iniziale
+    currentTime = 0.0; 
+    
+    // Resetta l'indice per ricominciare la lettura dei transiti
+    nextPassageIndex = 0;
+    
+    // Azzera i contatori delle statistiche e delle sanzioni
+    totalSanctions = 0;
+    totalSpeedSum = 0.0;
+    speedMeasurementsCount = 0;
+    
+    // Svuota le strutture dati temporanee
+    activeVehicles.clear();
+    varcoCounts.clear();
+    
+    // Nota: allPassages non viene svuotato perché contiene 
+    // i dati caricati dal file Passages.txt che serviranno ancora.
 }

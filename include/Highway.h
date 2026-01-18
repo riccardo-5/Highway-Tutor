@@ -5,7 +5,7 @@
 //File: Highway.h (autostrada)
 #include <vector>
 #include <string>
-
+#include <iostream>
 #include "Junction.h"
 #include "Passage.h"
 
@@ -16,7 +16,7 @@ private:
 public:
 
     void loadFromFile(const std::string& path); //carica l'autostrada dal file
-
+    
     const std::vector<Passage>& getPassages() const { return passages_; } //restituisce i varchi
     const std::vector<Junction>& getJunctions() const { return junctions_; } //restituisce gli svincoli
 
@@ -25,6 +25,7 @@ public:
 
     double getJunctionKm(int junctionId) const; //restituisce la distanza in km di uno svincolo
     double getPassageKm(int passageId) const; //restituisce la distanza in km di un varco
+    double getDistance(int gateId1, int gateId2) const; // Returns the distance in km between two gates given their IDs
 };
 
 #endif

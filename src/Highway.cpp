@@ -159,3 +159,19 @@ std::vector<int> Highway::getPassagesInBetween(int entryJunctionID, int exitJunc
         }
     return result;
 }
+
+
+double Highway::getDistance(int passageId1, int passageId2) const {
+    // Safety check
+    if (passageId1 < 1 || passageId1 > static_cast<int>(passages_.size()) ||
+        passageId2 < 1 || passageId2 > static_cast<int>(passages_.size())) {
+        std::cerr << "Errore: ID varco non valido (" << passageId1 << " o " << passageId2 << ")" << std::endl;
+        return 0.0;
+    }
+
+    // We use passageId - 1 because IDs start at 1 but vector indices start at 0
+    double d1 = passages_[passageId1 - 1].getKm();
+    double d2 = passages_[passageId2 - 1].getKm();
+
+    return std::abs(d1 - d2);
+}

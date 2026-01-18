@@ -2,9 +2,8 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 #include <cmath> // for floor and ceiling functions
-#include <stdexcept>
-#include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <filesystem>
 #include "Highway.h"
 #include "Vehicle.h"
@@ -15,8 +14,8 @@ class Simulator
     public:
         Simulator(const Highway& highway);
         std::vector<Interval> generateVelProfile(double distanceKm, double currentDepartureTime);
-        void generateRuns(); // writes on Runs.txt file
-        void generatePassages(); // writes on Passages.txt file
+        void generateRuns(const std::string& path); // writes on Runs.txt file
+        void generatePassages(const std::string& path); // writes on Passages.txt file
 
     private:
         static constexpr int kNumOfVehicles = 10000;

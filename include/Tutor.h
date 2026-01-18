@@ -5,7 +5,7 @@
 #include <map>
 
 
-struct Passage {  //group data
+struct tutorPassage {  //group data
     int varcoId;
     std::string plate;
     double timestamp; 
@@ -28,17 +28,17 @@ private:
     double currentTime;
 
 
-    std::vector<Passage> allPassages;    // Vector to store all the steps read from the file.
+    std::vector<tutorPassage> allPassages;    // Vector to store all the steps read from the file.
     size_t nextPassageIndex;     // Automatically manages memory
 
-    std::unordered_map<std::string, Passage> activeVehicles;     // Associate License Plate -> Last Pass.
+    std::unordered_map<std::string, tutorPassage> activeVehicles;     // Associate License Plate -> Last Pass.
   
     std::map<int, int> varcoCounts;     //Map sorted by statistics (VarcoID -> Count).
     long totalSanctions;
     double totalSpeedSum;
     long speedMeasurementsCount;
 
-    void processPassage(const Passage& p);
+    void processPassage(const tutorPassage& p);
 };
 
 #endif
